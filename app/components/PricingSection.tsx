@@ -1,8 +1,32 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import { Wifi, Download, Infinity } from 'lucide-react'
 
 const PricingSection = () => {
+  const [visibleCards, setVisibleCards] = useState<number[]>([])
+  const pricingRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index') || '0')
+            setVisibleCards(prev => [...prev, index])
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    if (pricingRef.current) {
+      const pricingCards = pricingRef.current.querySelectorAll('.pricing-card')
+      pricingCards.forEach(card => observer.observe(card))
+    }
+
+    return () => observer.disconnect()
+  }, [])
   const pricingPlans = [
     {
       icon: <Wifi className="w-6 h-6" />,
@@ -71,23 +95,29 @@ const PricingSection = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div ref={pricingRef} className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {pricingPlans.map((plan, index) => (
             <div
               key={index}
-              className="relative bg-gray-800 rounded-2xl p-8 shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105"
+              data-index={index}
+              className={`pricing-card relative bg-gray-800 rounded-2xl p-8 shadow-2xl hover:shadow-blue-500/20 transition-all duration-700 hover:scale-105 ${
+                visibleCards.includes(index) 
+                  ? 'opacity-100 translate-y-0 scale-100' 
+                  : 'opacity-0 translate-y-12 scale-95'
+              }`}
+              style={{ transitionDelay: `${index * 200}ms` }}
             >
               {/* Recommended Badge */}
               {plan.recommended && (
                 <div className="absolute -top-3 right-6">
-                  <span className="bg-gradient-to-r from-pink-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                  <span className="bg-gradient-to-r from-pink-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold animate-pulse">
                     Recommend
                   </span>
                 </div>
               )}
 
               {/* Icon */}
-              <div className="text-blue-400 mb-6">
+              <div className="text-blue-400 mb-6 transition-transform duration-300 hover:scale-110">
                 {plan.icon}
               </div>
 
@@ -120,7 +150,7 @@ const PricingSection = () => {
               </ul>
 
               {/* Button */}
-              <button className={`w-full ${plan.buttonStyle} text-white py-3 rounded-lg font-semibold transition-colors`}>
+              <button className={`w-full ${plan.buttonStyle} text-white py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
                 {plan.buttonText}
               </button>
             </div>
