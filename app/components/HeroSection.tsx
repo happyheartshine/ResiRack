@@ -1,31 +1,18 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRive, useStateMachineInput } from '@rive-app/react-canvas'
+
+
 
 const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(false)
   const heroRef = useRef<HTMLDivElement>(null)
-
-  // Rive animation for the main image
-  const { rive, RiveComponent } = useRive({
-    src: '/animations/hero-animation.riv', // We'll create this
-    stateMachines: 'HeroAnimation',
-    autoplay: true,
-  })
-
-  // Animation inputs
-  const fadeInInput = useStateMachineInput(rive, 'HeroAnimation', 'fadeIn')
-  const slideInInput = useStateMachineInput(rive, 'HeroAnimation', 'slideIn')
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true)
-          // Trigger Rive animations
-          if (fadeInInput) fadeInInput.value = true
-          if (slideInInput) slideInInput.value = true
         }
       },
       { threshold: 0.1 }
@@ -36,7 +23,7 @@ const HeroSection = () => {
     }
 
     return () => observer.disconnect()
-  }, [fadeInInput, slideInInput])
+  }, [])
   return (
     <section ref={heroRef} className="relative bg-gradient-to-b from-blue-50 to-white py-20 lg:py-32 overflow-hidden">
       {/* Background Pattern */}
@@ -74,24 +61,21 @@ const HeroSection = () => {
           </button>
         </div>
 
-        {/* Main Image - Rive Animated */}
+        {/* Main Image - Enhanced CSS Animation */}
         <div className={`relative flex justify-center transition-all duration-1000 delay-600 ${
           isVisible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-95'
         }`}>
-          <div className="relative">
-            {/* Fallback image for when Rive animation isn't available */}
+          <div className="relative group">
+            {/* Main image with enhanced CSS animations */}
             <img 
               src="/main1.png" 
               alt="ResiRack Server Illustration" 
-              className="w-auto h-auto max-w-full max-h-96 object-contain"
+              className="w-auto h-auto max-w-full max-h-96 object-contain transition-all duration-500 group-hover:scale-105 group-hover:drop-shadow-2xl animate-float"
             />
-            {/* Rive Animation Overlay */}
-            <div className="absolute inset-0">
-              <RiveComponent 
-                className="w-full h-full"
-                style={{ width: '100%', height: '100%' }}
-              />
-            </div>
+            {/* CSS Animation Enhancement */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            {/* Pulse effect */}
+            <div className="absolute inset-0 bg-blue-400/10 rounded-lg animate-pulse"></div>
           </div>
         </div>
       </div>

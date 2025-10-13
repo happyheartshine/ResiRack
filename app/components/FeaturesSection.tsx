@@ -2,35 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Shield, Zap, Globe, MessageCircle } from 'lucide-react'
-import { useRive, useStateMachineInput } from '@rive-app/react-canvas'
 
 const FeaturesSection = () => {
   const [visibleFeatures, setVisibleFeatures] = useState<number[]>([])
   const featuresRef = useRef<HTMLDivElement>(null)
-
-  // Rive animations for each feature
-  const { rive: latencyRive, RiveComponent: LatencyRive } = useRive({
-    src: '/animations/latency-animation.riv',
-    stateMachines: 'LatencyAnimation',
-    autoplay: false,
-  })
-
-  const { rive: countryRive, RiveComponent: CountryRive } = useRive({
-    src: '/animations/country-animation.riv',
-    stateMachines: 'CountryAnimation',
-    autoplay: false,
-  })
-
-  const { rive: iconRive, RiveComponent: IconRive } = useRive({
-    src: '/animations/icon-animation.riv',
-    stateMachines: 'IconAnimation',
-    autoplay: false,
-  })
-
-  // Animation inputs
-  const latencyInput = useStateMachineInput(latencyRive, 'LatencyAnimation', 'play')
-  const countryInput = useStateMachineInput(countryRive, 'CountryAnimation', 'play')
-  const iconInput = useStateMachineInput(iconRive, 'IconAnimation', 'play')
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -39,13 +14,6 @@ const FeaturesSection = () => {
           if (entry.isIntersecting) {
             const index = parseInt(entry.target.getAttribute('data-index') || '0')
             setVisibleFeatures(prev => [...prev, index])
-            
-            // Trigger specific Rive animations based on feature
-            setTimeout(() => {
-              if (index === 1 && latencyInput) latencyInput.value = true
-              if (index === 2 && countryInput) countryInput.value = true
-              if (index === 0 && iconInput) iconInput.value = true
-            }, index * 200)
           }
         })
       },
@@ -58,18 +26,17 @@ const FeaturesSection = () => {
     }
 
     return () => observer.disconnect()
-  }, [latencyInput, countryInput, iconInput])
+  }, [])
   const features = [
     {
       icon: <Shield className="w-8 h-8" />,
       title: "Privacy First.",
       description: "Hide your IP and browse safely without leaving a trace.",
       visual: (
-        <div className="flex items-center justify-center relative">
-          <img src="resirack.png" alt="Resirack" className="w-60 h-60 object-contain" />
-          <div className="absolute inset-0">
-            <IconRive className="w-full h-full" />
-          </div>
+        <div className="flex items-center justify-center relative group">
+          <img src="/resirack.png" alt="Resirack" className="w-60 h-60 object-contain transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 animate-float" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute inset-0 bg-blue-400/10 rounded-lg animate-pulse"></div>
         </div>
       )
     },
@@ -78,11 +45,10 @@ const FeaturesSection = () => {
       title: "speed.",
       description: "Experience lightning-fast connections with minimal latency for smooth, delay-free tasks.",
       visual: (
-        <div className="flex items-center justify-center relative">
-          <img src="/latency.png" alt="Latency" className="w-60 h-60 object-contain" />
-          <div className="absolute inset-0">
-            <LatencyRive className="w-full h-full" />
-          </div>
+        <div className="flex items-center justify-center relative group">
+          <img src="/latency.png" alt="Latency" className="w-60 h-60 object-contain transition-all duration-500 group-hover:scale-110 group-hover:brightness-110 animate-float" />
+          <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute inset-0 bg-green-400/10 rounded-lg animate-pulse"></div>
         </div>
       )
     },
@@ -91,11 +57,10 @@ const FeaturesSection = () => {
       title: "Global Access.",
       description: "Reach websites anywhere in the world, no matter where you are.",
       visual: (
-        <div className="flex items-center justify-center relative">
-          <img src="/country.png" alt="Country" className="w-60 h-60 object-contain" />
-          <div className="absolute inset-0">
-            <CountryRive className="w-full h-full" />
-          </div>
+        <div className="flex items-center justify-center relative group">
+          <img src="/country.png" alt="Country" className="w-60 h-60 object-contain transition-all duration-500 group-hover:scale-110 group-hover:contrast-110 animate-float" />
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-400/20 to-red-400/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute inset-0 bg-orange-400/10 rounded-lg animate-pulse"></div>
         </div>
       )
     },
